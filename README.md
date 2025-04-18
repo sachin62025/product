@@ -2,7 +2,6 @@
 
 Data Alchemist is a Python-based data aggregation and transformation tool that combines data from multiple public APIs to create meaningful insights about technology trends.
 
-![Data Alchemist Dashboard](./screenshot.png)
 
 ![Screenshot 2025-04-16 171544](https://github.com/user-attachments/assets/91a16428-a59c-4a47-8778-50722b6879d8)
 ![Screenshot 2025-04-16 171640](https://github.com/user-attachments/assets/88d73003-df6f-4d49-9f69-7001b5f0f6ea)
