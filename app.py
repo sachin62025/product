@@ -161,7 +161,6 @@ def api_viz_hot_discussions():
 
 @app.route('/api_viz_emerging_repos')
 def api_viz_emerging_repos():
-    """API endpoint for emerging repositories visualization."""
     try:
         repos_data = data_processor.get_emerging_repositories()
         visualization = data_analyzer.create_emerging_repos_chart(repos_data)
@@ -172,12 +171,12 @@ def api_viz_emerging_repos():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    """Handle 404 errors."""
+   
     return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    """Handle 500 errors."""
+    
     logger.error(f"Server error: {e}")
     return render_template('500.html'), 500
 

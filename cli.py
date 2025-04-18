@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""
-Command line interface for the Data Alchemist application.
-Provides a text-based interface for exploring technology trends.
-"""
+
 import logging
 import argparse
 import json
@@ -21,15 +18,8 @@ logger = logging.getLogger(__name__)
 
 def display_title():
     """Display the application title."""
-    print(r"""
- _____        _          _    _      _                    _     _   
-|  __ \      | |        / \  | |    / \   _ __   __ _  __| |   / \  
-| |  | | __ _| |_ __ _ / _ \ | |   / _ \ | '_ \ / _` |/ _` |  / _ \ 
-| |  | |/ _` | __/ _` / ___ \| |__/ ___ \| | | | (_| | (_| | / ___ \
-|_|  |_|\__,_|\__\__,_\_/  \_\_____/   \_\_| |_|\__,_|\__,_|/_/   \_\
-                                                                   
-   Technology Trends Analyzer
-   --------------------------
+    print(r"""                                                             
+   Technology Trends Analyzer 
 """)
 
 def display_menu():
@@ -52,12 +42,6 @@ def display_table(data, title):
     print(tabulate(data, headers="keys", tablefmt="grid"))
 
 def view_technology_popularity(processor):
-    """
-    Display technology popularity rankings.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
     print("\nFetching technology popularity data...")
     popularity_data = processor.get_technology_popularity()
     
@@ -75,12 +59,7 @@ def view_technology_popularity(processor):
     display_table(table_data, "TECHNOLOGY POPULARITY RANKINGS (TOP 20)")
 
 def explore_trending_topics(processor):
-    """
-    Display trending technology topics.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
+
     print("\nFetching trending topics data...")
     topics_data = processor.get_trending_topics()
     
@@ -129,12 +108,7 @@ def explore_trending_topics(processor):
             print()
 
 def discover_emerging_repositories(processor):
-    """
-    Display emerging GitHub repositories.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
+
     print("\nFetching emerging repositories data...")
     repos_data = processor.get_emerging_repositories()
     
@@ -178,12 +152,7 @@ def discover_emerging_repositories(processor):
         print(f"Related Technology: {repo.get('related_technology', 'Unknown')}")
 
 def browse_hot_discussions(processor):
-    """
-    Display hot discussions about technology.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
+
     print("\nFetching hot discussions data...")
     discussions_data = processor.get_hot_discussions()
     
@@ -231,12 +200,7 @@ def browse_hot_discussions(processor):
         print(f"Related Technology: {discussion.get('related_technology', 'Unknown')}")
 
 def analyze_technology_correlations(processor):
-    """
-    Display technology correlations.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
+
     print("\nFetching technology correlation data...")
     correlation_data = processor.get_technology_correlations()
     
@@ -281,12 +245,7 @@ def analyze_technology_correlations(processor):
         display_table(table_data, f"TECHNOLOGIES CORRELATED WITH {tech.upper()}")
 
 def generate_insights_report(processor):
-    """
-    Generate and display a comprehensive insights report.
-    
-    Args:
-        processor (DataProcessor): The data processor
-    """
+
     print("\nGenerating comprehensive insights report...")
     print("This might take a while as we analyze data from multiple sources...")
     
@@ -345,7 +304,7 @@ def generate_insights_report(processor):
             print(f"\nError saving report: {e}")
 
 def manage_cache():
-    """Manage the application cache."""
+    
     print("\nCACHE MANAGEMENT")
     print("1. Clear all cache")
     print("2. Clear expired cache only")
