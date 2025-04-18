@@ -1,6 +1,4 @@
-"""
-News API client for fetching technology news articles.
-"""
+
 import os
 import logging
 import requests
@@ -23,16 +21,7 @@ class NewsClient:
 
     @cache_response(expires=1800)  # Cache for 30 minutes
     def get_tech_news(self, days=7, limit=10):
-        """
-        Fetch technology news articles.
 
-        Args:
-            days (int): Number of days to look back
-            limit (int): Maximum number of articles to return
-
-        Returns:
-            list: List of news articles with metadata
-        """
         if not self.api_key:
             logger.error("NEWS_API_KEY environment variable not set. Cannot fetch news.")
             return []
@@ -81,15 +70,7 @@ class NewsClient:
 
     @cache_response(expires=3600)
     def get_technology_categories(self, limit=10):
-        """
-        Fetch news articles by technology categories.
 
-        Args:
-            limit (int): Maximum number of articles per category
-
-        Returns:
-            dict: Dictionary of categories with their articles
-        """
         if not self.api_key:
             logger.error("NEWS_API_KEY environment variable not set. Cannot fetch news.")
             return {}
