@@ -52,3 +52,11 @@ cd product
 python main.py
 ```
 
+## Add these API key in .env file
+GITHUB_API_KEY =''
+REDDIT_USERNAME = ''
+REDDIT_PASSWORD = ''
+REDDIT_CLIENT_ID = ''
+REDDIT_CLIENT_SECRET = '"
+STACKOVERFLOW_API_KEY = ''
+NEWS_API_KEY = ''
