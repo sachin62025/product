@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology Trends - Data Alchemist</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <!-- Load Chart.js in head to ensure it's available when needed -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i data-feather="activity"></i> Data Alchemist
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/trends">Trends</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/visualizations">Visualizations</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <header class="text-center mb-5">
+            <h1 class="display-4">Technology Trends</h1>
+            <p class="lead">Detailed analysis of technology popularity, trending topics, and emerging repositories.</p>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Technology Popularity</h5>
+                        <div class="spinner-border spinner-border-sm loading-spinner" role="status" id="popularity-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center my-4" id="popularity-placeholder">
+                            <img src="{{ url_for('api_viz_popularity') }}" alt="Technology Popularity Chart" class="img-fluid" id="popularity-chart" style="display: none;">
+                        </div>
+                        <div id="popularity-error" class="alert alert-danger" style="display: none;"></div>
+                        <div id="popularity-table" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Technology</th>
+                                        <th>Overall Score</th>
+                                        <th>GitHub Score</th>
+                                        <th>Stack Overflow Score</th>
+                                        <th>Google Trends Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="popularity-body">
+                                    <tr><td colspan="6" class="text-center">Loading data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Technology Score Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="score-distribution-chart" height="300"></canvas>
+                        <div id="distribution-error" class="alert alert-danger mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">About These Scores</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Overall Score</strong>: A weighted average of popularity across different platforms.</p>
+                        <ul>
+                            <li><strong>GitHub Score</strong>: Based on repository counts and language usage.</li>
+                            <li><strong>Stack Overflow Score</strong>: Based on question frequency and tag popularity.</li>
+                            <li><strong>Google Trends Score</strong>: Based on search volume and trends.</li>
+                        </ul>
+                        <p class="mb-0">Higher scores indicate more active development and community interest.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Trending Topics</h5>
+                        <div class="spinner-border spinner-border-sm loading-spinner" role="status" id="topics-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center my-4" id="topics-placeholder">
+                            <img src="{{ url_for('api_viz_trending_topics') }}" alt="Trending Topics Chart" class="img-fluid" id="topics-chart" style="display: none;">
+                        </div>
+                        <div id="topics-error" class="alert alert-danger" style="display: none;"></div>
+                        <div id="trending-topics">
+                            <div class="list-group" id="topics-list">
+                                <div class="list-group-item">Loading trending topics...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Emerging Repositories</h5>
+                        <div class="spinner-border spinner-border-sm loading-spinner" role="status" id="repos-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="repos-error" class="alert alert-danger" style="display: none;"></div>
+                        <div class="text-center mb-4" id="repos-placeholder">
+                            <img src="{{ url_for('api_viz_emerging_repos') }}" alt="Emerging Repositories Chart" class="img-fluid" id="repos-chart" style="display: none;">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Repository</th>
+                                        <th>Language</th>
+                                        <th>Stars</th>
+                                        <th>Forks</th>
+                                        <th>Related Tech</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="repos-body">
+                                    <tr><td colspan="5" class="text-center">Loading repositories...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Technology Correlations</h5>
+                        <div class="spinner-border spinner-border-sm loading-spinner" role="status" id="correlations-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center my-4" id="correlations-placeholder">
+                            <img src="{{ url_for('api_viz_correlations') }}" alt="Technology Correlations Heatmap" class="img-fluid" id="correlations-chart" style="display: none;">
+                        </div>
+                        <div id="correlations-error" class="alert alert-danger" style="display: none;"></div>
+                        <p class="text-center">This heatmap shows how different technologies are related based on their co-occurrence in repositories, discussions, and other sources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Data Alchemist</h5>
+                    <p class="text-muted">A Python-based data aggregation and transformation tool that combines data from 5+ public APIs to create meaningful insights about technology trends.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Data Sources</h5>
+                    <ul class="list-unstyled">
+                        <li>GitHub API</li>
+                        <li>Stack Overflow API</li>
+                        <li>HackerNews API</li>
+                        <li>News API</li>
+                        <li>Reddit API</li>
+                        <li>Google Trends</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-decoration-none">Dashboard</a></li>
+                        <li><a href="/trends" class="text-decoration-none">Trends</a></li>
+                        <li><a href="/visualizations" class="text-decoration-none">Visualizations</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center text-muted">© 2023 Data Alchemist</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script>
+        // Initialize Feather icons
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+            
+            // Load data for each section
+            loadPopularityData();
+            loadTrendingTopics();
+            loadEmergingRepos();
+            loadCorrelationsData();
+        });
+
+        // Load technology popularity data
+        function loadPopularityData() {
+            const spinner = document.getElementById('popularity-spinner');
+            const errorEl = document.getElementById('popularity-error');
+            const tableBody = document.getElementById('popularity-body');
+            
+            fetch('/api/data/popularity')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load popularity data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear loading state
+                    spinner.style.display = 'none';
+                    tableBody.innerHTML = '';
+                    
+                    // Sort technologies by overall score
+                    const sortedTechs = Object.entries(data)
+                        .sort((a, b) => b[1].overall_score - a[1].overall_score);
+                    
+                    // Display data in table
+                    sortedTechs.forEach(([tech, scores], index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${tech.charAt(0).toUpperCase() + tech.slice(1)}</td>
+                            <td>${scores.overall_score.toFixed(1)}</td>
+                            <td>${scores.platform_scores.github.toFixed(1)}</td>
+                            <td>${scores.platform_scores.stackoverflow.toFixed(1)}</td>
+                            <td>${scores.platform_scores.pytrends.toFixed(1)}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Create score distribution chart
+                    createScoreDistributionChart(sortedTechs.slice(0, 10));
+                    
+                    // Load chart
+                    loadChart('popularity');
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    errorEl.textContent = error.message;
+                    errorEl.style.display = 'block';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load data</td></tr>';
+                });
+        }
+
+        // Create score distribution chart
+        function createScoreDistributionChart(technologies) {
+            const ctx = document.getElementById('score-distribution-chart').getContext('2d');
+            
+            const labels = technologies.map(([tech, _]) => tech.charAt(0).toUpperCase() + tech.slice(1));
+            const githubScores = technologies.map(([_, scores]) => scores.platform_scores.github);
+            const stackoverflowScores = technologies.map(([_, scores]) => scores.platform_scores.stackoverflow);
+            const pytrendsScores = technologies.map(([_, scores]) => scores.platform_scores.pytrends);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'GitHub',
+                            data: githubScores,
+                            backgroundColor: '#6e5494',
+                            borderColor: '#6e5494',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Stack Overflow',
+                            data: stackoverflowScores,
+                            backgroundColor: '#f48024',
+                            borderColor: '#f48024',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Google Trends',
+                            data: pytrendsScores,
+                            backgroundColor: '#fbbc05',
+                            borderColor: '#fbbc05',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Technology Score Distribution'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load trending topics
+        function loadTrendingTopics() {
+            const spinner = document.getElementById('topics-spinner');
+            const errorEl = document.getElementById('topics-error');
+            const topicsList = document.getElementById('topics-list');
+            
+            fetch('/api/data/trending_topics')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load trending topics');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear loading state
+                    spinner.style.display = 'none';
+                    topicsList.innerHTML = '';
+                    
+                    // Sort topics by source count
+                    const sortedTopics = Object.entries(data)
+                        .sort((a, b) => b[1].source_count - a[1].source_count);
+                    
+                    if (sortedTopics.length === 0) {
+                        topicsList.innerHTML = '<div class="list-group-item">No trending topics found</div>';
+                        return;
+                    }
+                    
+                    sortedTopics.forEach(([topic, data]) => {
+                        const sourceTypes = [...new Set(data.sources.map(s => s.source_type))];
+                        const sourceLabels = sourceTypes.map(type => {
+                            const label = type.charAt(0).toUpperCase() + type.slice(1);
+                            const count = data.sources.filter(s => s.source_type === type).length;
+                            return `<span class="badge bg-${type === 'news' ? 'primary' : (type === 'reddit' ? 'danger' : 'warning')}">${label} (${count})</span>`;
+                        }).join(' ');
+                        
+                        const sourcesHtml = data.sources.slice(0, 3).map(source => {
+                            return `<a href="${source.url}" target="_blank" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <small class="text-${source.source_type === 'news' ? 'primary' : (source.source_type === 'reddit' ? 'danger' : 'warning')}">${source.source_type.toUpperCase()}</small>
+                                </div>
+                                <p class="mb-1">${source.title}</p>
+                            </a>`;
+                        }).join('');
+                        
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item mb-3';
+                        item.innerHTML = `
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">${topic}</h5>
+                                <small>${data.source_count} sources</small>
+                            </div>
+                            <p class="mb-1">${sourceLabels}</p>
+                            <div class="mt-3">
+                                <p class="mb-2">Top sources:</p>
+                                <div class="list-group">
+                                    ${sourcesHtml}
+                                </div>
+                                ${data.sources.length > 3 ? `<p class="mt-2 text-muted">And ${data.sources.length - 3} more sources</p>` : ''}
+                            </div>
+                        `;
+                        topicsList.appendChild(item);
+                    });
+                    
+                    // Load chart
+                    loadChart('trending_topics');
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    errorEl.textContent = error.message;
+                    errorEl.style.display = 'block';
+                    topicsList.innerHTML = '<div class="list-group-item text-danger">Failed to load trending topics</div>';
+                });
+        }
+
+        // Load emerging repositories
+        function loadEmergingRepos() {
+            const spinner = document.getElementById('repos-spinner');
+            const errorEl = document.getElementById('repos-error');
+            const tableBody = document.getElementById('repos-body');
+            
+            fetch('/api/data/emerging_repos')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load emerging repositories');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear loading state
+                    spinner.style.display = 'none';
+                    tableBody.innerHTML = '';
+                    
+                    // Sort repositories by stars
+                    const sortedRepos = data.sort((a, b) => b.stars - a.stars);
+                    
+                    if (sortedRepos.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No emerging repositories found</td></tr>';
+                        return;
+                    }
+                    
+                    sortedRepos.forEach(repo => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><a href="${repo.url}" target="_blank" class="text-decoration-none">${repo.name}</a></td>
+                            <td>${repo.language || 'Unknown'}</td>
+                            <td>${repo.stars.toLocaleString()}</td>
+                            <td>${repo.forks.toLocaleString()}</td>
+                            <td>${repo.related_technology || 'Unknown'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Load chart
+                    loadChart('emerging_repos');
+                })
+                .catch(error => {
+                    spinner.style.display = 'none';
+                    errorEl.textContent = error.message;
+                    errorEl.style.display = 'block';
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load repositories</td></tr>';
+                });
+        }
+
+        // Load technology correlations data
+        function loadCorrelationsData() {
+            const spinner = document.getElementById('correlations-spinner');
+            const errorEl = document.getElementById('correlations-error');
+            
+            // Load chart
+            loadChart('correlations');
+        }
+
+        // Load chart image
+        function loadChart(chartType) {
+            const chartImg = document.getElementById(`${chartType}-chart`);
+            const placeholder = document.getElementById(`${chartType}-placeholder`);
+            
+            // Map chart types to API endpoints
+            const endpointMap = {
+                'popularity': 'api_viz_popularity',
+                'trending_topics': 'api_viz_trending_topics',
+                'emerging_repos': 'api_viz_emerging_repos',
+                'correlations': 'api_viz_correlations'
+            };
+            
+            const endpoint = endpointMap[chartType] || `api_viz_${chartType}`;
+            
+            fetch(`/${endpoint}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${chartType} chart`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.image) {
+                        chartImg.src = `data:image/png;base64,${data.image}`;
+                        chartImg.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error loading ${chartType} chart:`, error);
+                    placeholder.innerHTML = `<p class="text-danger">Failed to load chart: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
