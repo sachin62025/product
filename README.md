@@ -44,5 +44,11 @@ Clone the repository:
 
 ```bash
 https://github.com/sachin62025/product.git
-'''
-dnj
+```
+```bash
+cd product
+```
+```bash
+python main.py
+```
+
