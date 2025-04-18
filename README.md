@@ -52,11 +52,15 @@ cd product
 python main.py
 ```
 
-## Add these API key in .env file
-GITHUB_API_KEY =''
-REDDIT_USERNAME = ''
-REDDIT_PASSWORD = ''
-REDDIT_CLIENT_ID = ''
-REDDIT_CLIENT_SECRET = '"
-STACKOVERFLOW_API_KEY = ''
-NEWS_API_KEY = ''
+## API Keys Configuration
+
+To use the APIs in this project, add your respective API keys to a `.env` file in the root directory. The structure should look like this:
+
+```plaintext
+GITHUB_API_KEY=''
+REDDIT_USERNAME=''
+REDDIT_PASSWORD=''
+REDDIT_CLIENT_ID=''
+REDDIT_CLIENT_SECRET=''
+STACKOVERFLOW_API_KEY=''
+NEWS_API_KEY=''
